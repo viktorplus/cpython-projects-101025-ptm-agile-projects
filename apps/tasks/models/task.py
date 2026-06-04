@@ -1,20 +1,21 @@
 from django.core.validators import MinLengthValidator
 from django.db import models
+from apps.tasks import utils
 
 
 class Task(models.Model):
 
     class Status(models.IntegerChoices):
-        new = 1,"New"
-        in_progress = 2,"In progress"
-        done = 3,"Done"
-        cancelled = 4,"Cancelled"
+        new = 1, "New"
+        in_progress = 2, "In progress"
+        done = 3, "Done"
+        cancelled = 4, "Cancelled"
 
     class Priority(models.IntegerChoices):
-        low = 1,"Low"
-        medium = 2,"Medium"
-        high = 3,"High"
-        critical = 4,"Critical"
+        low = 1, "Low"
+        medium = 2, "Medium"
+        high = 3, "High"
+        critical = 4, "Critical"
 
 
     name = models.CharField(
@@ -45,7 +46,7 @@ class Task(models.Model):
     )
 
     project = models.ForeignKey(
-        "Project",
+        "projects.Project",
         related_name="tasks",
         on_delete=models.CASCADE,
         verbose_name="Проект",
@@ -74,8 +75,7 @@ class Task(models.Model):
     )
 
     due_date = models.DateTimeField(
-        blank=True,
-        null=True,
+        default=utils.calculate_end_of_month
     )
 
     tags = models.ManyToManyField(
@@ -84,7 +84,7 @@ class Task(models.Model):
         related_name="tasks"
     )
     assignee = models.ForeignKey(
-        'User',
+        'projects.User',
         on_delete=models.SET_NULL,
         related_name='assignee_tasks',
         blank=True,
@@ -92,7 +92,7 @@ class Task(models.Model):
     )
 
     created_by = models.ForeignKey(
-        'User',
+        'projects.User',
         on_delete=models.SET_NULL,
         related_name='creator_tasks',
         blank=True,
