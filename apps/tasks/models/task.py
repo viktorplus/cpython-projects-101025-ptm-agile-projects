@@ -1,6 +1,7 @@
 from django.core.validators import MinLengthValidator
 from django.db import models
 from apps.tasks import utils
+from django.conf import settings
 
 
 class Task(models.Model):
@@ -84,7 +85,7 @@ class Task(models.Model):
         related_name="tasks"
     )
     assignee = models.ForeignKey(
-        'projects.User',
+        settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
         related_name='assignee_tasks',
         blank=True,
@@ -92,7 +93,7 @@ class Task(models.Model):
     )
 
     created_by = models.ForeignKey(
-        'projects.User',
+        settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
         related_name='creator_tasks',
         blank=True,
